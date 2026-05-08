@@ -1,48 +1,45 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import { errorMiddleware } from "./middlewares/error.js";
-import reservationRouter from "./routes/reservationRoute.js";
-import { dbConnection } from "./database/dbConnection.js";
-import userRouter from "./routes/userRoute.js"; // <--- Import the user routes
-import schemeRouter from "./routes/schemeRoute.js";
 import cookieParser from "cookie-parser";
 
-const app = express();
+import { errorMiddleware } from "./middlewares/error.js";
+import { dbConnection } from "./database/dbConnection.js";
+import reservationRouter from "./routes/reservationRoute.js";
+import userRouter from "./routes/userRoute.js"; 
+import schemeRouter from "./routes/schemeRoute.js";
+import { startAutomatedDeliveryTruck } from "./utils/schemeUpdater.js"; // 1. IMPORT IT
+
+// PHASE 1: LOAD ENVIRONMENT VARIABLES FIRST
 dotenv.config({ path: "./config.env" });
 
-app.use(
-  cors({
-    // 1. Hardcode the exact URL Vite uses. Do NOT use an array or process.env here.
-    origin: "http://localhost:5173", 
-    // 2. Explicitly allow all methods needed
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
-    // 3. Allow cookies to pass through
-    credentials: true,
-  })
-);
+const app = express();
 
+// PHASE 2: BORDER PATROL (CORS)
+app.use(cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"], 
+    credentials: true
+}));
 
+// PHASE 3: THE PARSERS (Must be exactly here, before routes)
+app.use(cookieParser()); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// PHASE 4: THE ROUTES
 app.use("/api/v1/schemes", schemeRouter);
-
-app.use(cookieParser()); // Add this line!
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
-
 app.use("/api/v1/reservation", reservationRouter);
-app.use("/api/v1/user", userRouter); // <--- Use the user routes
-app.get("/", (req, res, next)=>{return res.status(200).json({
-  success: true,
-  message: "HELLO WORLD AGAIN"
-})})
+app.use("/api/v1/user", userRouter); 
+
+app.get("/", (req, res, next) => {
+  return res.status(200).json({ success: true, message: "HELLO WORLD AGAIN" });
+});
+
+// PHASE 5: DATABASE & ERROR HANDLIN
 
 dbConnection();
-
+// 2. TURN IT ON RIGHT BEFORE EXPORTING/LISTENING
+startAutomatedDeliveryTruck();
 app.use(errorMiddleware);
 
 export default app;

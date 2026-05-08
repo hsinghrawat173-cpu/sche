@@ -3,21 +3,16 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minLength: 8,
-    select: false, // Don't return password by default in queries
-  },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  // Data for the AI to analyze:
+  age: { type: Number, required: true },
+  gender: { type: String, required: true },
+  state: { type: String, required: true },
+  category: { type: String, required: true }, // e.g., "OBC", "General", "SC/ST"
+  occupation: { type: String, required: true }, // e.g., "Student", "Farmer"
+  income: { type: Number, required: true }
 });
 
 // Hash password automatically before saving

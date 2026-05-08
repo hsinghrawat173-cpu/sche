@@ -2,13 +2,11 @@ import mongoose from "mongoose";
 
 export const dbConnection = () => {
   mongoose
-    .connect(process.env.MONGO_URI, {
-      dbName: "SCHEME_MATCH",
-    })
+    .connect("mongodb+srv://harshrawat2803_db_user:rCvCOcH7a2cRmGgg@cluster0.ouksl0e.mongodb.net/SchemeMatch?appName=Cluster0")
     .then(() => {
-      console.log("Connected to database!");
+      console.log("✅ Database Engine Online! Connected to SchemeMatch!");
     })
     .catch((err) => {
-      console.log(`Some error occured while connecing to database: ${err}`);
+      console.log("❌ Database Connection Failed: ", err);
     });
 };
