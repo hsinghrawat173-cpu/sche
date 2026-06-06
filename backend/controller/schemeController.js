@@ -103,6 +103,37 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // 1. ANALYZE SCHEMES (The Hybrid AI Engine)
 // 1. ANALYZE SCHEMES (The Hybrid AI Engine)
+
+// THE ALGORITHM: Calculates a 0-100 score based on mathematical need and fit
+const calculateImpactScore = (userProfile, scheme) => {
+  let score = 20; // Base score just for qualifying
+
+  const userOcc = (userProfile.occupation || "").toLowerCase();
+  const schemeCat = (scheme.targetCategory || "general").toLowerCase();
+  const userInc = Number(userProfile.income) || 0;
+  const schemeLim = Number(scheme.incomeLimit) || 0;
+
+  // 1. Occupation Match (Up to 40 points)
+  if (schemeCat.includes(userOcc) || userOcc.includes(schemeCat)) {
+    score += 40; // Perfect match
+  } else if (schemeCat === "general") {
+    score += 20; // Universal schemes get half points
+  }
+
+  // 2. Financial Need (Up to 40 points)
+  // The closer the user is to extreme poverty relative to the scheme, the higher the impact.
+  if (schemeLim > 0) {
+    const needRatio = 1 - userInc / schemeLim;
+    if (needRatio > 0) {
+      score += Math.round(needRatio * 40);
+    }
+  } else {
+    score += 30; // If there is no income limit, give a flat 30 points
+  }
+
+  // Cap it at 98 so it feels realistic (nobody gets a perfect 100)
+  return Math.min(score, 98);
+};
 export const analyzeSchemes = async (req, res) => {
   try {
     const { userProfile } = req.body;
@@ -191,13 +222,16 @@ export const analyzeSchemes = async (req, res) => {
         .map((scheme) => ({
           ...scheme.toObject(),
           aiReason: `Matched based on your profile as a ${safeOccupation}. (Standard Fallback Match)`,
+          // Inside your array mapping or pushing, add this single line:
+          impactScore: calculateImpactScore(userProfile, scheme),
         }));
 
       // Failsafe: If the backup bouncer is too strict and finds 0 matches, show 3 general schemes instead of a blank screen.
       if (fallbackSchemes.length === 0) {
-        fallbackSchemes = allSchemes.slice(0, 3).map((scheme) => ({
+        fallbackSchemes = allSchemes.slice(0, 7).map((scheme) => ({
           ...scheme.toObject(),
           aiReason: "Showing popular general schemes while AI is offline.",
+          impactScore: calculateImpactScore(userProfile, scheme),
         }));
       }
 

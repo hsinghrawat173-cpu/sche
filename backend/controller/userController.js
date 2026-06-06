@@ -7,10 +7,28 @@ import bcrypt from "bcrypt";
 // ==========================================
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, age, gender, state, category, occupation, income } = req.body;
+    const {
+      name,
+      email,
+      password,
+      age,
+      gender,
+      state,
+      category,
+      occupation,
+      income,
+    } = req.body;
 
     const user = await User.create({
-      name, email, password, age, gender, state, category, occupation, income
+      name,
+      email,
+      password,
+      age,
+      gender,
+      state,
+      category,
+      occupation,
+      income,
     });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
@@ -18,21 +36,23 @@ export const register = async (req, res, next) => {
     });
 
     // Localhost friendly cookie (No 'secure: true' block)
-    res.status(200).cookie("token", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 
-    }).json({
-      success: true,
-      message: "User Registered Successfully",
-      user,
-    });
-
+    res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
+      .json({
+        success: true,
+        message: "User Registered Successfully",
+        user,
+      });
   } catch (error) {
     // Cleanly handles the exact 11000 duplicate email error you hit earlier
     if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "An account with this email already exists. Please log in." 
+      return res.status(400).json({
+        success: false,
+        message: "An account with this email already exists. Please log in.",
       });
     }
     next(error);
@@ -42,35 +62,54 @@ export const register = async (req, res, next) => {
 // ==========================================
 // 2. LOGIN LOGIC
 // ==========================================
+
+
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Please provide email and password." });
+      return res.status(400).json({
+        success: false,
+        message: "Please provide email and password.",
+      });
     }
 
-    // Verify the user exists
+    // 1. Verify the user exists
     const user = await User.findOne({ email });
 
-    if (!user || user.password !== password) {
+    if (!user) {
       return res.status(401).json({ success: false, message: "Invalid Email or Password." });
     }
 
+    // 2. The Math Engine: Compare plain text to the database hash
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: "Invalid Email or Password." });
+    }
+
+    // 3. Login successful! Generate the VIP Wristband (JWT)
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: process.env.JWT_EXPIRES || "7d",
     });
 
-    // Localhost friendly cookie (No 'secure: true' block)
-    res.status(200).cookie("token", token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 
-    }).json({
-      success: true,
-      message: "User Logged In Successfully",
-      user,
-    });
-
+    // 4. Send the token securely as an HTTP-only cookie
+    res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true, // Prevents hackers from stealing it via JavaScript
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
+      .json({
+        success: true,
+        message: "User Logged In Successfully",
+        user: {
+            _id: user._id,
+            email: user.email,
+            // Add any other non-sensitive fields you want React to know immediately
+        },
+      });
   } catch (error) {
     next(error);
   }
@@ -115,7 +154,12 @@ export const loginUser = async (req, res, next) => {
 
     // 1. Check if both fields were provided
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: "Please provide email and password." });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Please provide email and password.",
+        });
     }
 
     // 2. Find the user in the database by their email
@@ -123,7 +167,9 @@ export const loginUser = async (req, res, next) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email or password." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password." });
     }
 
     // 3. THE MAGIC TRICK: Compare the entered password to the database hash
@@ -131,7 +177,9 @@ export const loginUser = async (req, res, next) => {
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
-      return res.status(401).json({ success: false, message: "Invalid email or password." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password." });
     }
 
     // 4. GENERATE THE JWT (The Digital ID Card)
@@ -150,27 +198,31 @@ export const loginUser = async (req, res, next) => {
         email: user.email,
         occupation: user.occupation,
         income: user.income,
-        category: user.category
+        category: user.category,
       },
-      token: token // Your React app will save this token to stay logged in
+      token: token, // Your React app will save this token to stay logged in
     });
-
   } catch (error) {
     console.error("Login Error:", error);
-    res.status(500).json({ success: false, message: "Server error during login." });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error during login." });
   }
 };
 
 export const logout = async (req, res, next) => {
   try {
     // Overwrite the token with a blank string and expire it instantly
-    res.status(200).cookie("token", "", {
-      expires: new Date(Date.now()),
-      httpOnly: true,
-    }).json({
-      success: true,
-      message: "User Logged Out Successfully."
-    });
+    res
+      .status(200)
+      .cookie("token", "", {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+      })
+      .json({
+        success: true,
+        message: "User Logged Out Successfully.",
+      });
   } catch (error) {
     next(error);
   }
@@ -185,15 +237,15 @@ export const updateProfile = async (req, res, next) => {
 
     // Use the ID verified by the bouncer to update MongoDB
     const updatedUser = await User.findByIdAndUpdate(
-      req.user._id, 
-      newUserData, 
-      { new: true, runValidators: true }
+      req.user._id,
+      newUserData,
+      { new: true, runValidators: true },
     );
 
     res.status(200).json({
       success: true,
       message: "Profile updated successfully.",
-      user: updatedUser
+      user: updatedUser,
     });
   } catch (error) {
     next(error);
