@@ -149,8 +149,8 @@ const Hero = () => {
           <div 
             style={{
               position: "absolute",
-              bottom: "10%",
-              left: "-5%", // Pushes it slightly off the image for depth
+              bottom: "25%",
+              left: "27%", // Pushes it slightly off the image for depth
               background: "rgba(255, 255, 255, 0.1)",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
@@ -182,12 +182,7 @@ const Hero = () => {
         </section>
       </main>
 
-      {/* Scroll Indicator */}
-      <div style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", opacity: 0.7 }}>
-        <span style={{ fontSize: "0.8rem", fontWeight: "600", letterSpacing: "2px", textTransform: "uppercase" }}>Discover</span>
-        <div style={{ width: "2px", height: "30px", background: "linear-gradient(to bottom, white, transparent)" }}></div>
-      </div>
-
+ 
       {/* CSS Animation embedded globally for the floating card */}
       <style>
         {`
