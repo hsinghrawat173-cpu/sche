@@ -1,0 +1,2 @@
+# sche
+projects regarding competitions
