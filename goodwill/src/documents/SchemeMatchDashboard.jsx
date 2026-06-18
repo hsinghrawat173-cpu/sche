@@ -804,7 +804,7 @@ const SchemeMatchDashboard = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/v1/user/me", {
+        const response = await fetch("https://sche-sefs.onrender.com/api/v1/user/me", {
           method: "GET",
           credentials: "include",
         });
@@ -830,7 +830,7 @@ const SchemeMatchDashboard = () => {
     setSchemes([]);
     try {
       const response = await fetch(
-        "http://localhost:4000/api/v1/schemes/analyze",
+        "https://sche-sefs.onrender.com/api/v1/schemes/analyze",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -862,7 +862,7 @@ const SchemeMatchDashboard = () => {
 
   const handleSaveProfile = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/v1/user/update", {
+      const response = await fetch("https://sche-sefs.onrender.com/api/v1/user/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -895,7 +895,7 @@ const SchemeMatchDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/v1/user/logout", {
+      const response = await fetch("https://sche-sefs.onrender.com/api/v1/user/logout", {
         method: "GET",
         credentials: "include",
       });

@@ -31,7 +31,7 @@ const Register = () => {
     try {
       // Logic: Sending full payload to the Express backend
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"}/api/v1/user/register`,
+        `${import.meta.env.VITE_BACKEND_URL || "https://sche-sefs.onrender.com"}/api/v1/user/register`,
         {
           method: "POST",
           headers: {
