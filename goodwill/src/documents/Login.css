@@ -129,3 +129,9 @@ html, body, #root {
   .sm-login-wrapper { padding: 2rem; }
   .sm-login-nav { padding: 1rem 2rem; }
 }
+@media (max-width: 360px) {
+  .sm-login-wrapper { padding: 2rem; }
+  .sm-login-nav { padding: 1rem 2rem; }
+  
+
+}

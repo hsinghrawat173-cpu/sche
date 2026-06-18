@@ -1,14 +1,182 @@
-/* Core Variables */
-
+/* ========================================== */
+/* CORE SETUP & CONTAINERS                    */
+/* ========================================== */
 html, body, #root {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100%;
-  min-height: 100vh;
-  background-color: #0d0e12; /* Matches your hero dark background */
-  overflow-x: hidden; /* Kills any horizontal scrollbar gaps */
+  margin: 0 !important; padding: 0 !important;
+  width: 100%; min-height: 100vh;
+  background-color: #0d0e12; overflow-x: hidden;
 }
 
-/* =========================================
-   1. GLOBAL VARIABLES & THEME
-   ========================================= */
+.sm-hero-container {
+  background: linear-gradient(135deg, #d5866b 0%, #4e3288 25%, #2a58b5 60%, #90c7d7 100%);
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  color: white; font-family: system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* 🎯 REDUNDANCY KILLER: Shared Flexbox Group */
+.sm-nav, .sm-logo-group, .sm-nav-actions, .sm-link-how,
+.sm-play-icon, .sm-main, .sm-hero-buttons, .sm-visual-section, .sm-card-header {
+  display: flex; 
+  align-items: center;
+}
+
+
+
+/* Shared Flex Justification */
+.sm-nav, .sm-main, .sm-card-header { justify-content: space-between; }
+.sm-visual-section, .sm-play-icon { justify-content: center; }
+
+/* 🎯 REDUNDANCY KILLER: Shared Glassmorphism Blurs */
+.sm-nav, .sm-logo-icon, .sm-btn-reg, .sm-btn-primary, .sm-play-icon, .sm-impact-card {
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.sm-nav, .sm-impact-card { 
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+}
+
+/* ========================================== */
+/* NAVBAR SPECIFICS                           */
+/* ========================================== */
+.sm-nav {
+  padding: 20px 5%;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.sm-logo-group { gap: 12px; }
+.sm-nav-actions { gap: 15px; }
+
+.sm-logo-icon {
+  background: rgba(120, 46, 46, 0.2);
+  padding: 6px 14px; /* <--- This makes it a pill shape instead of a circle */
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.2rem;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sm-logo-text {
+  font-weight: 800; font-size: 1.4rem;
+  letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================== */
+/* BUTTONS & LINKS (Merged States)            */
+/* ========================================== */
+.sm-link-login, .sm-link-how, .sm-btn-reg, .sm-btn-primary {
+  color: white; text-decoration: none; transition: all 0.2s ease;
+}
+
+.sm-link-login { color: rgba(255, 255, 255, 0.8); font-weight: 600; }
+.sm-link-login:hover { color: white; }
+
+.sm-link-how { font-weight: 600; gap: 10px; }
+.sm-link-how:hover { opacity: 0.7; }
+
+/* Shared Button Structure */
+.sm-btn-reg, .sm-btn-primary {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.sm-btn-reg:hover, .sm-btn-primary:hover { background: rgba(255, 255, 255, 0.3); }
+
+.sm-btn-reg { padding: 10px 24px; font-weight: 700; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+.sm-btn-primary { padding: 16px 32px; font-weight: 800; font-size: 1.1rem; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); }
+.sm-btn-primary:hover { transform: translateY(-2px); }
+
+.sm-play-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ========================================== */
+/* MAIN LAYOUT & TYPOGRAPHY                   */
+/* ========================================== */
+.sm-main { flex: 1; flex-wrap: wrap; padding: 40px 5%; gap: 40px; }
+.sm-hero-content { flex: 1 1 400px; max-width: 600px; }
+.sm-hero-buttons { gap: 20px; flex-wrap: wrap; }
+
+.sm-hero-title { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; line-height: 1.1; margin: 0 0 25px 0; text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); }
+.sm-text-dim { color: rgba(255, 255, 255, 0.5); }
+.sm-text-gradient { background: linear-gradient(to right, #fff, #90c7d7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.sm-hero-desc { font-size: 1.1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.8); margin-bottom: 40px; }
+.sm-hero-desc strong { color: white; }
+
+/* ========================================== */
+/* VISUAL SECTION & IMPACT CARD               */
+/* ========================================== */
+.sm-visual-section { flex: 1 1 400px; position: relative; min-height: 450px; width: 100%; }
+
+.sm-image-wrapper {
+  width: 100%; max-width: 500px; height: 400px; border-radius: 24px;
+  overflow: hidden; position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* 🎯 REDUNDANCY KILLER: Absolute Positioning Merge */
+.sm-image-overlay, .sm-image-wrapper img { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.sm-image-wrapper img { object-fit: cover; opacity: 0.8; }
+.sm-image-overlay { background: linear-gradient(to top, rgba(78, 50, 136, 0.8), transparent); }
+
+.sm-impact-card {
+  position: absolute; bottom: 25%; left: 27%;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 25px; border-radius: 16px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); width: 280px;
+  animation: float 6s ease-in-out infinite;
+}
+
+.sm-card-header { margin-bottom: 15px; }
+.sm-card-dot { width: 10px; height: 10px; border-radius: 50%; background: #34d399; box-shadow: 0 0 10px #34d399; }
+.sm-card-id { font-size: 0.75rem; font-weight: 700; color: rgba(255, 255, 255, 0.6); letter-spacing: 1px; }
+.sm-card-title { margin: 0 0 10px 0; font-size: 1.1rem; font-weight: 700; color: white; }
+.sm-card-score { font-size: 3.5rem; font-weight: 900; line-height: 1; color: #34d399; margin-bottom: 15px; text-shadow: 0 0 20px rgba(52, 211, 153, 0.4); }
+.sm-card-score-max { font-size: 1.2rem; color: rgba(255, 255, 255, 0.4); }
+.sm-card-progress-track { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin-bottom: 15px; }
+.sm-card-progress-fill { width: 84%; height: 100%; background: #34d399; box-shadow: 0 0 10px rgba(52, 211, 153, 0.8); }
+.sm-card-match { margin: 0; font-size: 0.85rem; color: rgba(255, 255, 255, 0.7); }
+.sm-card-match span { color: white; font-weight: 700; }
+
+/* ========================================== */
+/* ANIMATIONS (Condensed)                     */
+/* ========================================== */
+@keyframes float { 
+  0%, 100% { transform: translateY(0px); } 
+  50% { transform: translateY(-15px); } 
+}
+@keyframes floatMobile { 
+  0%, 100% { transform: translate(-50%, 0px); } 
+  50% { transform: translate(-50%, -15px); } 
+}
+
+/* ========================================== */
+/* MOBILE OVERRIDES (663px)                   */
+/* ========================================== */
+@media (max-width: 663px) {
+  .sm-nav { padding: 15px 5%; }
+  .sm-logo-text { font-size: 1.1rem; }
+  .sm-nav-actions { gap: 10px; }
+  .sm-btn-reg { padding: 8px 16px; font-size: 0.9rem; }
+  .sm-hero-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .sm-hero-title { font-size: 2.5rem; }
+  .sm-hero-buttons { justify-content: center; }
+  .sm-image-wrapper { height: 320px; }
+  .sm-impact-card { left: 50%; bottom: 5%; transform: translateX(-50%); width: 90%; max-width: 280px; animation: floatMobile 6s ease-in-out infinite; }
+}
+@media (max-width: 360px) {
+  .sm-nav { padding: 15px 5%; }
+  .sm-logo-text { font-size: 1.1rem;font-size: 20px; }
+  .sm-nav-actions { gap: 10px;font-size: 15px; }
+  .sm-btn-reg { padding: 8px 16px; font-size: 0.9rem;font-size: 10px }
+  .sm-hero-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .sm-hero-title { font-size: 2.5rem; }
+  .sm-hero-buttons { justify-content: center; }
+  .sm-image-wrapper { height: 320px; }
+  .sm-impact-card { left: 50%; bottom: 5%; transform: translateX(-50%); width: 90%; max-width: 280px; animation: floatMobile 6s ease-in-out infinite; }
+}
+
+

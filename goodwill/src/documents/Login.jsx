@@ -41,12 +41,17 @@ const Login = () => {
   };
 
   return (
+    <>
+
+    
     <div
       style={{
         // The exact same deep mesh gradient from your dashboard
         background: "linear-gradient(135deg, #a7473b 0%, #4e3288 25%, #2a58b5 60%, #90c7d7 100%)",
         minHeight: "100vh",
         display: "flex",
+        flexDirection:"column",
+        gap:"50px" ,
         justifyContent: "center",
         alignItems: "center",
         color: "white",
@@ -54,6 +59,26 @@ const Login = () => {
         padding: "20px", // Prevents the box from hitting the edges on small mobile screens
       }}
     >
+
+       <button
+          onClick={() => navigate("/")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "rgba(255,255,255,0.7)",
+            cursor: "pointer",
+            fontWeight: "600",
+            transition: "color 0.2s",
+          }}
+          onMouseOver={(e) => (e.currentTarget.style.color = "white")}
+          onMouseOut={(e) =>
+            (e.currentTarget.style.color = "rgba(255,255,255,0.7)")
+          }
+        >
+          ← Back to Home
+        </button>
+
+       
       <div
         style={{
           // The Frosted Glass Engine
@@ -180,7 +205,7 @@ const Login = () => {
           </button>
         </form>
       </div>
-    </div>
+    </div></>
   );
 };
 
