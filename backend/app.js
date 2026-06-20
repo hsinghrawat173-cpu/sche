@@ -17,7 +17,10 @@ const app = express();
 
 // PHASE 2: BORDER PATROL (CORS)
 app.use(cors({
-    origin: "https://sche-1.onrender.com", 
+    origin: [
+        "http://localhost:5173", // For when you are testing on your laptop
+        "https://sche-1.onrender.com" // For your deployed React frontend
+    ],
     credentials: true
 }));
 
