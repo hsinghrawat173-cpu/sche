@@ -1088,7 +1088,7 @@ const SchemeMatchDashboard = () => {
         </div>
 
         {/* MATCHED SCHEMES GRID */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "30px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px" }}>
           {schemes.length === 0 && !loading && (
             <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "60px 20px", background: "rgba(255, 255, 255, 0.05)", borderRadius: "16px", border: "1px dashed rgba(255,255,255,0.2)", backdropFilter: "blur(10px)" }}>
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "1.1rem", margin: 0 }}>
@@ -1110,7 +1110,7 @@ const SchemeMatchDashboard = () => {
                 boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.1)",
                 display: "flex",
                 flexDirection: "column",
-                height: "100%",
+                height: "85%",
                 transition: "all 0.3s ease",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)"; e.currentTarget.style.transform = "translateY(-5px)"; border: "1px solid rgba(255, 255, 255, 0.3)" }}
