@@ -35,12 +35,14 @@ export const register = async (req, res, next) => {
       expiresIn: process.env.JWT_EXPIRES || "7d",
     });
 
-    // Localhost friendly cookie (No 'secure: true' block)
+    // 🛡️ UPGRADED: Render/Production friendly cookie
     res
       .status(200)
       .cookie("token", token, {
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
+        secure: true, // REQUIRED for Render HTTPS
+        sameSite: "none", // REQUIRED for Cross-Domain React
       })
       .json({
         success: true,
@@ -55,15 +57,15 @@ export const register = async (req, res, next) => {
         message: "An account with this email already exists. Please log in.",
       });
     }
-    next(error);
+    // 🛡️ UPGRADED: Guarantees a JSON response on crash
+    console.error("Register Error:", error);
+    res.status(500).json({ success: false, message: "Server error during registration.", error: error.message });
   }
 };
 
 // ==========================================
 // 2. LOGIN LOGIC
 // ==========================================
-
-
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -95,11 +97,14 @@ export const login = async (req, res, next) => {
     });
 
     // 4. Send the token securely as an HTTP-only cookie
+    // 🛡️ UPGRADED: Render/Production friendly cookie
     res
       .status(200)
       .cookie("token", token, {
         httpOnly: true, // Prevents hackers from stealing it via JavaScript
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        secure: true, // REQUIRED for Render
+        sameSite: "none", // REQUIRED for Cross-Domain React
       })
       .json({
         success: true,
@@ -107,11 +112,12 @@ export const login = async (req, res, next) => {
         user: {
             _id: user._id,
             email: user.email,
-            // Add any other non-sensitive fields you want React to know immediately
         },
       });
   } catch (error) {
-    next(error);
+    // 🛡️ UPGRADED: Guarantees a JSON response on crash
+    console.error("Login Error:", error);
+    res.status(500).json({ success: false, message: "Server error during login." });
   }
 };
 
@@ -131,12 +137,11 @@ export const getUserProfile = async (req, res) => {
     }
 
     // 🔒 STRICT SECURITY LOGIC: Remove the password field before sending to the client
-    // .toObject() converts the Mongoose document to a plain JS object
     const { password, ...safeUserData } = user.toObject();
 
     res.status(200).json({
       success: true,
-      user: safeUserData, // The password hash is completely gone now
+      user: safeUserData, 
     });
 
   } catch (error) {
@@ -146,13 +151,13 @@ export const getUserProfile = async (req, res) => {
 };
 
 // ==========================================
-// 4. LOGOUT LOGIC
+// NOTE: This was your duplicate login function (loginUser). 
+// I left it intact so it doesn't break your routes if you were pointing to it!
 // ==========================================
 export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Check if both fields were provided
     if (!email || !password) {
       return res
         .status(400)
@@ -162,8 +167,6 @@ export const loginUser = async (req, res, next) => {
         });
     }
 
-    // 2. Find the user in the database by their email
-    // We add .select("+password") just in case you hid the password field in your schema
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
@@ -172,8 +175,6 @@ export const loginUser = async (req, res, next) => {
         .json({ success: false, message: "Invalid email or password." });
     }
 
-    // 3. THE MAGIC TRICK: Compare the entered password to the database hash
-    // bcrypt.compare takes the plain text input and compares it to the encrypted string
     const isPasswordMatched = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatched) {
@@ -182,13 +183,10 @@ export const loginUser = async (req, res, next) => {
         .json({ success: false, message: "Invalid email or password." });
     }
 
-    // 4. GENERATE THE JWT (The Digital ID Card)
-    // If we make it here, the password was perfect. We create a secure token for them.
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRE || "7d",
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+      expiresIn: process.env.JWT_EXPIRES || "7d",
     });
 
-    // 5. Send the token back to the frontend securely
     res.status(200).json({
       success: true,
       message: "Login successful! JWT secured.",
@@ -200,7 +198,7 @@ export const loginUser = async (req, res, next) => {
         income: user.income,
         category: user.category,
       },
-      token: token, // Your React app will save this token to stay logged in
+      token: token, 
     });
   } catch (error) {
     console.error("Login Error:", error);
@@ -210,6 +208,9 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
+// ==========================================
+// 4. LOGOUT LOGIC
+// ==========================================
 export const logout = async (req, res, next) => {
   try {
     // Overwrite the token with a blank string and expire it instantly
@@ -218,13 +219,16 @@ export const logout = async (req, res, next) => {
       .cookie("token", "", {
         expires: new Date(Date.now()),
         httpOnly: true,
+        secure: true, // 🛡️ UPGRADED
+        sameSite: "none", // 🛡️ UPGRADED
       })
       .json({
         success: true,
         message: "User Logged Out Successfully.",
       });
   } catch (error) {
-    next(error);
+    console.error("Logout Error:", error);
+    res.status(500).json({ success: false, message: "Server error during logout." });
   }
 };
 
@@ -248,6 +252,7 @@ export const updateProfile = async (req, res, next) => {
       user: updatedUser,
     });
   } catch (error) {
-    next(error);
+    console.error("Update Profile Error:", error);
+    res.status(500).json({ success: false, message: "Server error during profile update." });
   }
 };
